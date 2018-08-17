@@ -1,8 +1,10 @@
-CREATE TABLE jail (
-	identifier VARCHAR(100) NOT NULL,
-	J_Time int(10) NOT NULL,
-	J_Cell VARCHAR(5) NOT NULL,
-	Jailer VARCHAR(100) NOT NULL,
-	Jailer_ID VARCHAR(100) NOT NULL,
-	PRIMARY KEY (identifier)
-);
+CREATE TABLE `jail` (
+  `identifier` varchar(100) NOT NULL,
+  `isjailed` tinyint(1) DEFAULT NULL,
+  `J_Time` datetime NOT NULL,
+  `J_Cell` varchar(20) NOT NULL,
+  `Jailer` varchar(100) NOT NULL,
+  `Jailer_ID` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+ALTER TABLE `jail`
+  ADD PRIMARY KEY (`identifier`);
