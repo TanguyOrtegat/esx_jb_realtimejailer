@@ -52,3 +52,13 @@ function openJailMenu(playerid)
   )
 end
 ```
+
+and add this too in policeclient file
+```
+function UnblockMenuInput()
+    Citizen.CreateThread( function()
+        Citizen.Wait( 150 )
+        blockinput = false 
+    end )
+end
+```
