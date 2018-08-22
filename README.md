@@ -8,7 +8,7 @@ This is the code you need to put in esx_policejob and integrate it in the menu y
 - 3 in server cfg add: start esx_jb_realtimejailer
 - 4 add the code below in police client file 
 - 5a trigger somewhere in your menus : openJailMenu(GetPlayerServerId(player))  -->olderversion of policejob where player is a variable of your player
-- 5b trigger somewhere in your menus : openJailMenu(GetPlayerServerId(closestplayer))  -->newer version of policejob where player is a variable of your player
+- 5b trigger somewhere in your menus : openJailMenu(GetPlayerServerId(closestplayer))  -->newer version of policejob where closestplayer is a variable of your player
 - 6 done !
 
 ```
