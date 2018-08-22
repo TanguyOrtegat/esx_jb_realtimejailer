@@ -1,4 +1,4 @@
-config= {}
+Config= {}
 Config.Clothes = {
 	police = {
 		prison_wear = {
