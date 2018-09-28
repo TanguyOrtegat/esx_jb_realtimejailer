@@ -11,8 +11,12 @@ Citizen.CreateThread(function()
     end
 end)
 
-RegisterNetEvent("esx_jb_jailer:JailPoliceStation1")
-AddEventHandler("esx_jb_jailer:JailPoliceStation1", function(JailTime)
+RegisterNetEvent("esx_jb_jailer:JailInStation")
+AddEventHandler("esx_jb_jailer:JailInStation", function(Station, Distance, JailTime)
+	jailing(Station, Distance, JailTime)
+end)
+
+function jailing(Station, Distance, JailTime)
 	if cJ == true then
 		return
 	end
@@ -20,9 +24,10 @@ AddEventHandler("esx_jb_jailer:JailPoliceStation1", function(JailTime)
 	if DoesEntityExist(PlayerPed) then
 		
 		Citizen.CreateThread(function()
-			local playerOldLoc = GetEntityCoords(PlayerPed, true)
-			SetJailClothes()
-			SetEntityCoords(PlayerPed, 459.5500793457, -994.46508789063, 23.914855957031)--{x = 459.5500793457,y = -994.46508789063,z = 23.914855957031 },
+			local spawnloccoords = {}
+			TriggerEvent('esx_society:setClothes', "police", "prison_wear")	
+			spawnloccoords = SetPlayerSpawnLocationjail(Station)
+			SetEntityCoords(PlayerPed, spawnloccoords.x,spawnloccoords.y, spawnloccoords.z )
 			cJ = true
 			IsPlayerUnjailed = false
 			while JailTime > 0 and not IsPlayerUnjailed do
@@ -37,8 +42,8 @@ AddEventHandler("esx_jb_jailer:JailPoliceStation1", function(JailTime)
 
 				
 				PlayerPed = GetPlayerPed(-1)
-				-- RemoveAllPedWeapons(PlayerPed, true)
-				-- SetEntityInvincible(PlayerPed, true)
+				--RemoveAllPedWeapons(PlayerPed, true)
+				--SetEntityInvincible(PlayerPed, true)
 				if IsPedInAnyVehicle(PlayerPed, false) then
 					ClearPedTasksImmediately(PlayerPed)
 				end
@@ -49,208 +54,49 @@ AddEventHandler("esx_jb_jailer:JailPoliceStation1", function(JailTime)
 				end
 				Citizen.Wait(1000)
 				local pL = GetEntityCoords(PlayerPed, true)
-				local D = Vdist(459.5500793457, -994.46508789063, 23.914855957031, pL['x'], pL['y'], pL['z'])
-				if D > 2 then -- distance#######################################################################################
-					SetEntityCoords(PlayerPed, 459.5500793457, -994.46508789063, 23.914855957031)
+				local D = Vdist(spawnloccoords.x,spawnloccoords.y, spawnloccoords.z, pL['x'], pL['y'], pL['z'])
+				if D > Distance then -- distance#######################################################################################
+					SetEntityCoords(PlayerPed, spawnloccoords.x,spawnloccoords.y, spawnloccoords.z)
 				end
 				JailTime = JailTime - 1.0
 			end
 			TriggerServerEvent('chatMessageEntered', "SYSTEM", { 0, 0, 0 }, GetPlayerName(PlayerId()) .." a été libéré de la prison.")
 			TriggerServerEvent('esx_jb_jailer:UnJailplayer', GetPlayerServerId(PlayerId()))
-			SetEntityCoords(PlayerPed, 432.95864868164, -981.41455078125, 29.710334777832)--{x = 432.95864868164,y = -981.41455078125,z = 29.710334777832 },
+			local outsidecoords = {}
+			outsidecoords = SetPlayerSpawnLocationoutsidejail(Station)
+			SetEntityCoords(PlayerPed, outsidecoords.x,outsidecoords.y,outsidecoords.z )
 			cJ = false
-			-- SetEntityInvincible(PlayerPed, false)
-			GetBackOriginalClothes()
+			--SetEntityInvincible(PlayerPed, false)
+			TriggerEvent('esx_society:getPlayerSkin')
 		end)
 	end
-end)
+end
 
-RegisterNetEvent("esx_jb_jailer:JailPoliceStation2")
-AddEventHandler("esx_jb_jailer:JailPoliceStation2", function(JailTime)
-	if cJ == true then
-		return
+function SetPlayerSpawnLocationjail(location)
+	if location == 'JailPoliceStation1' then
+		return {x=459.5500793457, y=-994.46508789063, z=23.914855957031}
+	elseif location == 'JailPoliceStation2' then
+		return {x=458.41693115234,y=-997.93572998047,z=23.914854049683}	
+	elseif location == 'JailPoliceStation3' then
+		return {x=458.29275512695,y=-1001.5576782227,z=23.914852142334}	
+	elseif location == 'FederalJail' then
+		return {x=1643.7593994141,y=2530.9877929688,z=44.564888000488}
 	end
-	local PlayerPed = GetPlayerPed(-1)
-	if DoesEntityExist(PlayerPed) then
-		
-		Citizen.CreateThread(function()
-			SetJailClothes()
-			local playerOldLoc = GetEntityCoords(PlayerPed, true)
-			SetEntityCoords(PlayerPed, 458.41693115234, -997.93572998047, 23.914854049683)-- {x = 458.41693115234,y = -997.93572998047,z = 23.914854049683 },
-			cJ = true
-			IsPlayerUnjailed = false
-			while JailTime > 0 and not IsPlayerUnjailed do
-				local remainingjailseconds = JailTime/ 60
-				local jailseconds =  math.floor(JailTime) % 60 
-				local remainingjailminutes = remainingjailseconds / 60
-				local jailminutes =  math.floor(remainingjailseconds) % 60
-				local remainingjailhours = remainingjailminutes / 24
-				local jailhours =  math.floor(remainingjailminutes) % 24
-				local remainingjaildays = remainingjailhours / 365 
-				local jaildays =  math.floor(remainingjailhours) % 365
-				PlayerPed = GetPlayerPed(-1)
-				-- RemoveAllPedWeapons(PlayerPed, true)
-				-- SetEntityInvincible(PlayerPed, true)
-				if IsPedInAnyVehicle(PlayerPed, false) then
-					ClearPedTasksImmediately(PlayerPed)
-				end
-				if JailTime % 10 == 0 then
-					if JailTime % 30 == 0 then
-						TriggerEvent('chatMessage', 'SYSTEM', { 0, 0, 0 }, math.floor(jaildays).." jours, "..math.floor(jailhours).." heures,"..math.floor(jailminutes).." minutes, "..math.floor(jailseconds).." secondes avant d'être libéré.")
-					end
-				end
-				Citizen.Wait(1000)
-				local pL = GetEntityCoords(PlayerPed, true)
-				local D = Vdist(458.41693115234, -997.93572998047, 23.914854049683, pL['x'], pL['y'], pL['z'])
-				if D > 2 then
-					SetEntityCoords(PlayerPed, 458.41693115234, -997.93572998047, 23.914854049683)
-				end
-				JailTime = JailTime - 1.0
-			end
-			TriggerServerEvent('chatMessageEntered', "SYSTEM", { 0, 0, 0 }, GetPlayerName(PlayerId()) .." a été libéré de la prison.")
-			TriggerServerEvent('esx_jb_jailer:UnJailplayer', GetPlayerServerId(PlayerId()))
-			SetEntityCoords(PlayerPed, 432.95864868164, -981.41455078125, 29.710334777832)
-			cJ = false
-			-- SetEntityInvincible(PlayerPed, false)
-			GetBackOriginalClothes()
-		end)
-	end
-end)
+end
 
-RegisterNetEvent("esx_jb_jailer:JailPoliceStation3")
-AddEventHandler("esx_jb_jailer:JailPoliceStation3", function(JailTime)
-	if cJ == true then
-		return
+function SetPlayerSpawnLocationoutsidejail(location)
+	if location == 'JailPoliceStation1' then
+		return {x=432.95864868164,y=-981.41455078125,z=29.710334777832}
+	elseif location == 'JailPoliceStation2' then
+		return {x=432.95864868164,y=-981.41455078125,z=29.710334777832}	
+	elseif location == 'JailPoliceStation3' then
+		return {x=432.95864868164,y=-981.41455078125,z=29.710334777832}	
+	elseif location == 'FederalJail' then
+		return {x=1847.5042724609,y=2586.2209472656,z=44.672046661377}
 	end
-	local PlayerPed = GetPlayerPed(-1)
-	if DoesEntityExist(PlayerPed) then
-		
-		Citizen.CreateThread(function()
-			SetJailClothes()
-			local playerOldLoc = GetEntityCoords(PlayerPed, true)
-			SetEntityCoords(PlayerPed, 458.29275512695, -1001.5576782227, 23.914852142334)-- {x = 458.29275512695,y = -1001.5576782227,z = 23.914852142334 },
-			cJ = true
-			IsPlayerUnjailed = false
-			while JailTime > 0 and not IsPlayerUnjailed do
-				local remainingjailseconds = JailTime/ 60
-				local jailseconds =  math.floor(JailTime) % 60 
-				local remainingjailminutes = remainingjailseconds / 60
-				local jailminutes =  math.floor(remainingjailseconds) % 60
-				local remainingjailhours = remainingjailminutes / 24
-				local jailhours =  math.floor(remainingjailminutes) % 24
-				local remainingjaildays = remainingjailhours / 365 
-				local jaildays =  math.floor(remainingjailhours) % 365
-
-				PlayerPed = GetPlayerPed(-1)
-				-- RemoveAllPedWeapons(PlayerPed, true)
-				-- SetEntityInvincible(PlayerPed, true)
-				if IsPedInAnyVehicle(PlayerPed, false) then
-					ClearPedTasksImmediately(PlayerPed)
-				end
-				if JailTime % 10 == 0 then
-					if JailTime % 30 == 0 then
-						TriggerEvent('chatMessage', 'SYSTEM', { 0, 0, 0 }, math.floor(jaildays).." jours, "..math.floor(jailhours).." heures,"..math.floor(jailminutes).." minutes, "..math.floor(jailseconds).." secondes avant d'être libéré.")
-					end
-				end
-				Citizen.Wait(1000)
-				local pL = GetEntityCoords(PlayerPed, true)
-				local D = Vdist(458.29275512695, -1001.5576782227, 23.914852142334, pL['x'], pL['y'], pL['z'])
-				if D > 2 then
-					SetEntityCoords(PlayerPed, 458.29275512695, -1001.5576782227, 23.914852142334)
-				end
-				JailTime = JailTime - 1.0
-			end
-			TriggerServerEvent('chatMessageEntered', "SYSTEM", { 0, 0, 0 }, GetPlayerName(PlayerId()) .." a été libéré de la prison.")
-			TriggerServerEvent('esx_jb_jailer:UnJailplayer', GetPlayerServerId(PlayerId()))
-			SetEntityCoords(PlayerPed, 432.95864868164, -981.41455078125, 29.710334777832)
-			cJ = false
-			-- SetEntityInvincible(PlayerPed, false)
-			GetBackOriginalClothes()
-		end)
-	end
-end)
-
-RegisterNetEvent("esx_jb_jailer:FederalJail")
-AddEventHandler("esx_jb_jailer:FederalJail", function(JailTime)
-	if cJ == true then
-		return
-	end
-	local PlayerPed = GetPlayerPed(-1)
-	if DoesEntityExist(PlayerPed) then
-		
-		Citizen.CreateThread(function()
-			SetJailClothes()
-			local playerOldLoc = GetEntityCoords(PlayerPed, true)
-			SetEntityCoords(PlayerPed, 1643.7593994141, 2530.9877929688, 44.564888000488 )-- {x = 458.29275512695,y = -1001.5576782227,z = 23.914852142334 },
-			cJ = true
-			IsPlayerUnjailed = false
-			while JailTime > 0 and not IsPlayerUnjailed do
-				local remainingjailseconds = JailTime/ 60
-				local jailseconds =  math.floor(JailTime) % 60 
-				local remainingjailminutes = remainingjailseconds / 60
-				local jailminutes =  math.floor(remainingjailseconds) % 60
-				local remainingjailhours = remainingjailminutes / 24
-				local jailhours =  math.floor(remainingjailminutes) % 24
-				local remainingjaildays = remainingjailhours / 365 
-				local jaildays =  math.floor(remainingjailhours) % 365
-
-				PlayerPed = GetPlayerPed(-1)
-				-- RemoveAllPedWeapons(PlayerPed, true)
-				-- SetEntityInvincible(PlayerPed, true)
-				if IsPedInAnyVehicle(PlayerPed, false) then
-					ClearPedTasksImmediately(PlayerPed)
-				end			
-				if JailTime % 10 == 0 then
-					if JailTime % 30 == 0 then
-						TriggerEvent('chatMessage', 'SYSTEM', { 0, 0, 0 }, math.floor(jaildays).." jours, "..math.floor(jailhours).." heures,"..math.floor(jailminutes).." minutes, "..math.floor(jailseconds).." secondes avant d'être libéré.")
-					end
-				end
-				Citizen.Wait(1000)
-				local pL = GetEntityCoords(PlayerPed, true)
-				local D = Vdist(1643.7593994141, 2530.9877929688, 44.564888000488 , pL['x'], pL['y'], pL['z'])
-				if D > 80 then
-					SetEntityCoords(PlayerPed, 1643.7593994141, 2530.9877929688, 44.564888000488 )
-				end
-				JailTime = JailTime - 1.0
-			end
-			TriggerServerEvent('chatMessageEntered', "SYSTEM", { 0, 0, 0 }, GetPlayerName(PlayerId()) .." a été libéré de la prison.")
-			TriggerServerEvent('esx_jb_jailer:UnJailplayer', GetPlayerServerId(PlayerId()))
-			SetEntityCoords(PlayerPed, 1847.5042724609, 2586.2209472656, 44.672046661377)
-			cJ = false
-			-- SetEntityInvincible(PlayerPed, false)
-			GetBackOriginalClothes()
-		end)
-	end
-end)
+end
 
 RegisterNetEvent("esx_jb_jailer:UnJail")
 AddEventHandler("esx_jb_jailer:UnJail", function()
 	IsPlayerUnjailed = true
 end)
-
-function SetJailClothes()
-local playerPed = GetPlayerPed(-1)
-  TriggerEvent('skinchanger:getSkin', function(skin)
-
-    if skin.sex == 0 then
-		-- print(dump(Config.Clothes[job]))
-      if Config.Clothes.police.prison_wear.male ~= nil then
-        TriggerEvent('skinchanger:loadClothes', skin, Config.Clothes.police.prison_wear.male)
-      else
-        ESX.ShowNotification(_U('no_outfit'))
-      end
-    else
-      if Config.Clothes.police.prison_wear.female ~= nil then
-        TriggerEvent('skinchanger:loadClothes', skin, Config.Clothes.police.prison_wear.female)
-      else
-        ESX.ShowNotification(_U('no_outfit'))
-      end
-    end
-  end)
-end
-
-function GetBackOriginalClothes()
-	ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
-	  TriggerEvent('skinchanger:loadSkin', skin)
-	end)
-end
