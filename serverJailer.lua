@@ -10,24 +10,20 @@ AddEventHandler('es:playerLoaded', function(source)
 	MySQL.Async.fetchAll('SELECT TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP,J_Time) as timeleft, J_Cell as cellule, isjailed as isjailed from jail where identifier =@id', {['@id'] = identifier}, function(result)
 		if result[1] ~= nil then
 			if result[1].timeleft > 0 then
-				if result[1].cellule == "JailPoliceStation1" then
-					TriggerClientEvent("esx_jb_jailer:JailPoliceStation1", source, result[1].timeleft)
-				elseif result[1].cellule == "JailPoliceStation2" then
-					TriggerClientEvent("esx_jb_jailer:JailPoliceStation2", source, result[1].timeleft)
-				elseif result[1].cellule == "JailPoliceStation3" then
-					TriggerClientEvent("esx_jb_jailer:JailPoliceStation3", source, result[1].timeleft)
-				elseif result[1].cellule == "FederalJail" then
-					TriggerClientEvent("esx_jb_jailer:FederalJail", source, result[1].timeleft)
+				if result[1].cellule ~= nil then
+					if result[1].cellule ~= "FederalJail" then
+						TriggerClientEvent("esx_jb_jailer:JailInStation", source,result[1].cellule, 2, result[1].timeleft)
+					else
+						TriggerClientEvent("esx_jb_jailer:JailInStation", source,result[1].cellule, 80, result[1].timeleft)
+					end
 				end
 			elseif result[1].isjailed == true then
-				if result[1].cellule == "JailPoliceStation1" then
-					TriggerClientEvent("esx_jb_jailer:JailPoliceStation1", source, 5)
-				elseif result[1].cellule == "JailPoliceStation2" then
-					TriggerClientEvent("esx_jb_jailer:JailPoliceStation2", source, 5)
-				elseif result[1].cellule == "JailPoliceStation3" then
-					TriggerClientEvent("esx_jb_jailer:JailPoliceStation3", source, 5)
-				elseif result[1].cellule == "FederalJail" then
-					TriggerClientEvent("esx_jb_jailer:FederalJail", source, 5)
+				if result[1].cellule ~= nil then
+					if result[1].cellule ~= "FederalJail" then
+						TriggerClientEvent("esx_jb_jailer:JailInStation", source,result[1].cellule, 2, result[1].timeleft)
+					else
+						TriggerClientEvent("esx_jb_jailer:JailInStation", source,result[1].cellule, 80, result[1].timeleft)
+					end
 				end
 			end
 		end
@@ -92,48 +88,17 @@ AddEventHandler("esx_jb_jailer:PutInJail", function(playerid, jail, jailtime)
 		day = day -30
 	end
 	
-	if jail == "JailPoliceStation1" then
-		if GetPlayerName(playerid) ~= nil then
-			print("[esx_jb_jailer] Mettre en prison en JailPoliceStation1 ".. GetPlayerName(playerid).. " pour ".. jailtime .." secs - commande entree par ".. GetPlayerName(source))
-			TriggerEvent('esx:importantlogs', "[esx_jb_jailer] Mettre en prison en JailPoliceStation1 ".. GetPlayerName(playerid).. " pour ".. jailtime .." secs - commande entree par ".. GetPlayerName(source))
-			MySQL.Async.execute("INSERT INTO jail (identifier,isjailed,J_Time,J_Cell,Jailer,Jailer_ID) VALUES (@Identifier,@isjailed,@J_Time,@J_Cell,@JAILER,@JID) ON DUPLICATE KEY UPDATE identifier=@identifier,isjailed=@isjailed,J_Time=@J_Time, J_Cell=@J_Cell, Jailer=@JAILER, Jailer_ID=@JID", {['@identifier'] = identifier,['@isjailed'] = true, ['@J_Time'] = year..'-'..month..'-'..day..' '..hour..':'..minutes..':'..seconds, ['@J_Cell'] = "JailPoliceStation1", ['@JAILER'] = name, ['@JID'] = id})
+	if jail ~= nil then
+			print("[esx_jb_jailer] Mettre en prison en ".. jail.." :".. GetPlayerName(playerid).. " pour ".. jailtime .." secs - commande entree par ".. GetPlayerName(source))
+			TriggerEvent('esx:importantlogs',"[esx_jb_jailer] Mettre en prison en ".. jail.." :".. GetPlayerName(playerid).. " pour ".. jailtime .." secs - commande entree par ".. GetPlayerName(source))
+			MySQL.Async.execute("INSERT INTO jail (identifier,isjailed,J_Time,J_Cell,Jailer,Jailer_ID) VALUES (@Identifier,@isjailed,@J_Time,@J_Cell,@JAILER,@JID) ON DUPLICATE KEY UPDATE identifier=@identifier,isjailed=@isjailed,J_Time=@J_Time, J_Cell=@J_Cell, Jailer=@JAILER, Jailer_ID=@JID", {['@identifier'] = identifier,['@isjailed'] = true, ['@J_Time'] = year..'-'..month..'-'..day..' '..hour..':'..minutes..':'..seconds, ['@J_Cell'] = jail, ['@JAILER'] = name, ['@JID'] = id})
 			-- MySQL.Async.execute("INSERT INTO jail (identifier,isjailed,J_Time,J_Cell,Jailer,Jailer_ID) VALUES (@Identifier,@isjailed,@J_Time,@J_Cell,@JAILER,@JID) ON DUPLICATE KEY UPDATE Identifier=@identifier, isjailed=@isjailed J_Time=@J_Time, J_Cell=@J_Cell, jailer=@JAILER, Jailer_ID=@JID", {['@identifier'] = identifier,['@isjailed'] = true, ['@J_Time'] = os.date('%Y-%m-%d %H:%M:%S'), ['@J_Cell'] = "123", ['@JAILER'] = name, ['@JID'] = id})
 			-- TriggerClientEvent('chatMessage', -1, 'JUGE', { 0, 0, 0 }, GetPlayerName(playerid) ..' est en prison pour '.. math.floor(jaildays).." jours, "..math.floor(jailhours).." heures,"..math.floor(jailminutes).." minutes, "..math.floor(jailseconds).." secondes")
-			TriggerClientEvent("esx_jb_jailer:JailPoliceStation1", playerid, jailtime)
-		end
-	elseif jail == "JailPoliceStation2" then
-		if GetPlayerName(playerid) ~= nil then
-			print("[esx_jb_jailer] Mettre en prison en JailPoliceStation2 ".. GetPlayerName(playerid).. " pour ".. jailtime .." secs - commande entree par ".. GetPlayerName(source))
-			TriggerEvent('esx:importantlogs', "[esx_jb_jailer] Mettre en prison en JailPoliceStation2 ".. GetPlayerName(playerid).. " pour ".. jailtime .." secs - commande entree par ".. GetPlayerName(source))
-			local identifier = GetPlayerIdentifiers(playerid)[1]
-			local name = GetPlayerName(source)
-			local id = GetPlayerIdentifiers(source)[1]
-			MySQL.Async.execute("INSERT INTO jail (identifier,isjailed,J_Time,J_Cell,Jailer,Jailer_ID) VALUES (@Identifier,@isjailed,@J_Time,@J_Cell,@JAILER,@JID) ON DUPLICATE KEY UPDATE identifier=@identifier,isjailed=@isjailed,J_Time=@J_Time, J_Cell=@J_Cell, Jailer=@JAILER, Jailer_ID=@JID", {['@identifier'] = identifier,['@isjailed'] = true, ['@J_Time'] = year..'-'..month..'-'..day..' '..hour..':'..minutes..':'..seconds, ['@J_Cell'] = "JailPoliceStation2", ['@JAILER'] = name, ['@JID'] = id})
-			-- TriggerClientEvent('chatMessage', -1, 'JUGE', { 0, 0, 0 }, GetPlayerName(playerid) ..' est en prison pour '.. math.floor(jaildays).." jours, "..math.floor(jailhours).." heures,"..math.floor(jailminutes).." minutes, "..math.floor(jailseconds).." secondes")
-			TriggerClientEvent("esx_jb_jailer:JailPoliceStation2", playerid, jailtime)
-		end
-	elseif jail == "JailPoliceStation3" then
-		if GetPlayerName(playerid) ~= nil then
-			print("[esx_jb_jailer] Mettre en prison en JailPoliceStation3 en JailPoliceStation3 ".. GetPlayerName(playerid).. " pour ".. jailtime .." secs - commande entree par ".. GetPlayerName(source))
-			TriggerEvent('esx:importantlogs', "[esx_jb_jailer] Mettre en prison ".. GetPlayerName(playerid).. " pour ".. jailtime .." secs - commande entree par ".. GetPlayerName(source))
-			local identifier = GetPlayerIdentifiers(playerid)[1]
-			local name = GetPlayerName(source)
-			local id = GetPlayerIdentifiers(source)[1]
-			MySQL.Async.execute("INSERT INTO jail (identifier,isjailed,J_Time,J_Cell,Jailer,Jailer_ID) VALUES (@Identifier,@isjailed,@J_Time,@J_Cell,@JAILER,@JID) ON DUPLICATE KEY UPDATE identifier=@identifier,isjailed=@isjailed,J_Time=@J_Time, J_Cell=@J_Cell, Jailer=@JAILER, Jailer_ID=@JID", {['@identifier'] = identifier,['@isjailed'] = true, ['@J_Time'] = year..'-'..month..'-'..day..' '..hour..':'..minutes..':'..seconds, ['@J_Cell'] = "JailPoliceStation3", ['@JAILER'] = name, ['@JID'] = id})
-			-- TriggerClientEvent('chatMessage', -1, 'JUGE', { 0, 0, 0 }, GetPlayerName(playerid) ..' est en prison pour '.. math.floor(jaildays).." jours, "..math.floor(jailhours).." heures,"..math.floor(jailminutes).." minutes, "..math.floor(jailseconds).." secondes")
-			TriggerClientEvent("esx_jb_jailer:JailPoliceStation3", playerid, jailtime)
-		end
-	elseif jail == "FederalJail" then
-		if GetPlayerName(playerid) ~= nil then
-			print("[esx_jb_jailer] Mettre en prison en FederalJail ".. GetPlayerName(playerid).. " pour ".. jailtime .." secs - commande entree par ".. GetPlayerName(source))
-			TriggerEvent('esx:importantlogs', "[esx_jb_jailer] Mettre en prison en FederalJail ".. GetPlayerName(playerid).. " pour ".. jailtime .." secs - commande entree par ".. GetPlayerName(source))
-			local identifier = GetPlayerIdentifiers(playerid)[1]
-			local name = GetPlayerName(source)
-			local id = GetPlayerIdentifiers(source)[1]
-			MySQL.Async.execute("INSERT INTO jail (identifier,isjailed,J_Time,J_Cell,Jailer,Jailer_ID) VALUES (@Identifier,@isjailed,@J_Time,@J_Cell,@JAILER,@JID) ON DUPLICATE KEY UPDATE identifier=@identifier,isjailed=@isjailed,J_Time=@J_Time, J_Cell=@J_Cell, Jailer=@JAILER, Jailer_ID=@JID", {['@identifier'] = identifier,['@isjailed'] = true, ['@J_Time'] = year..'-'..month..'-'..day..' '..hour..':'..minutes..':'..seconds, ['@J_Cell'] = "FederalJail", ['@JAILER'] = name, ['@JID'] = id})
-			-- TriggerClientEvent('chatMessage', -1, 'JUGE', { 0, 0, 0 }, GetPlayerName(playerid) ..' est en prison pour '.. math.floor(jaildays).." jours, "..math.floor(jailhours).." heures,"..math.floor(jailminutes).." minutes, "..math.floor(jailseconds).." secondes")
-			TriggerClientEvent("esx_jb_jailer:FederalJail", playerid, jailtime)
-		end
+			if jail ~= "FederalJail" then
+				TriggerClientEvent("esx_jb_jailer:JailInStation", playerid,jail,2,jailtime)
+			else
+				TriggerClientEvent("esx_jb_jailer:JailInStation", playerid,jail,80,jailtime)
+			end
 	end
 end)
 
