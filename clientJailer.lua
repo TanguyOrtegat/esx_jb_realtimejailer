@@ -12,11 +12,11 @@ Citizen.CreateThread(function()
 end)
 
 RegisterNetEvent("esx_jb_jailer:JailInStation")
-AddEventHandler("esx_jb_jailer:JailInStation", function(Station, Distance, JailTime)
-	jailing(Station, Distance, JailTime)
+AddEventHandler("esx_jb_jailer:JailInStation", function(Station, JailTime)
+	jailing(Station, JailTime)
 end)
 
-function jailing(Station, Distance, JailTime)
+function jailing(Station, JailTime)
 	if cJ == true then
 		return
 	end
@@ -55,7 +55,7 @@ function jailing(Station, Distance, JailTime)
 				Citizen.Wait(1000)
 				local pL = GetEntityCoords(PlayerPed, true)
 				local D = Vdist(spawnloccoords.x,spawnloccoords.y, spawnloccoords.z, pL['x'], pL['y'], pL['z'])
-				if D > Distance then -- distance#######################################################################################
+				if D > spawnloccoords.distance then -- distance#######################################################################################
 					SetEntityCoords(PlayerPed, spawnloccoords.x,spawnloccoords.y, spawnloccoords.z)
 				end
 				JailTime = JailTime - 1.0
@@ -74,13 +74,13 @@ end
 
 function SetPlayerSpawnLocationjail(location)
 	if location == 'JailPoliceStation1' then
-		return {x=459.5500793457, y=-994.46508789063, z=23.914855957031}
+		return {x=459.5500793457, y=-994.46508789063, z=23.914855957031, distance = 2}
 	elseif location == 'JailPoliceStation2' then
-		return {x=458.41693115234,y=-997.93572998047,z=23.914854049683}	
+		return {x=458.41693115234,y=-997.93572998047,z=23.914854049683, distance = 2}	
 	elseif location == 'JailPoliceStation3' then
-		return {x=458.29275512695,y=-1001.5576782227,z=23.914852142334}	
+		return {x=458.29275512695,y=-1001.5576782227,z=23.914852142334, distance = 2}	
 	elseif location == 'FederalJail' then
-		return {x=1643.7593994141,y=2530.9877929688,z=44.564888000488}
+		return {x=1643.7593994141,y=2530.9877929688,z=44.564888000488, distance = 80}
 	end
 end
 

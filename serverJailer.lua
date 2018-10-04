@@ -11,19 +11,11 @@ AddEventHandler('es:playerLoaded', function(source)
 		if result[1] ~= nil then
 			if result[1].timeleft > 0 then
 				if result[1].cellule ~= nil then
-					if result[1].cellule ~= "FederalJail" then
-						TriggerClientEvent("esx_jb_jailer:JailInStation", source,result[1].cellule, 2, result[1].timeleft)
-					else
-						TriggerClientEvent("esx_jb_jailer:JailInStation", source,result[1].cellule, 80, result[1].timeleft)
-					end
+					TriggerClientEvent("esx_jb_jailer:JailInStation", source,result[1].cellule,result[1].timeleft)
 				end
 			elseif result[1].isjailed == true then
 				if result[1].cellule ~= nil then
-					if result[1].cellule ~= "FederalJail" then
-						TriggerClientEvent("esx_jb_jailer:JailInStation", source,result[1].cellule, 2, result[1].timeleft)
-					else
-						TriggerClientEvent("esx_jb_jailer:JailInStation", source,result[1].cellule, 80, result[1].timeleft)
-					end
+					TriggerClientEvent("esx_jb_jailer:JailInStation", source,result[1].cellule,result[1].timeleft)
 				end
 			end
 		end
@@ -94,11 +86,7 @@ AddEventHandler("esx_jb_jailer:PutInJail", function(playerid, jail, jailtime)
 			MySQL.Async.execute("INSERT INTO jail (identifier,isjailed,J_Time,J_Cell,Jailer,Jailer_ID) VALUES (@Identifier,@isjailed,@J_Time,@J_Cell,@JAILER,@JID) ON DUPLICATE KEY UPDATE identifier=@identifier,isjailed=@isjailed,J_Time=@J_Time, J_Cell=@J_Cell, Jailer=@JAILER, Jailer_ID=@JID", {['@identifier'] = identifier,['@isjailed'] = true, ['@J_Time'] = year..'-'..month..'-'..day..' '..hour..':'..minutes..':'..seconds, ['@J_Cell'] = jail, ['@JAILER'] = name, ['@JID'] = id})
 			-- MySQL.Async.execute("INSERT INTO jail (identifier,isjailed,J_Time,J_Cell,Jailer,Jailer_ID) VALUES (@Identifier,@isjailed,@J_Time,@J_Cell,@JAILER,@JID) ON DUPLICATE KEY UPDATE Identifier=@identifier, isjailed=@isjailed J_Time=@J_Time, J_Cell=@J_Cell, jailer=@JAILER, Jailer_ID=@JID", {['@identifier'] = identifier,['@isjailed'] = true, ['@J_Time'] = os.date('%Y-%m-%d %H:%M:%S'), ['@J_Cell'] = "123", ['@JAILER'] = name, ['@JID'] = id})
 			-- TriggerClientEvent('chatMessage', -1, 'JUGE', { 0, 0, 0 }, GetPlayerName(playerid) ..' est en prison pour '.. math.floor(jaildays).." jours, "..math.floor(jailhours).." heures,"..math.floor(jailminutes).." minutes, "..math.floor(jailseconds).." secondes")
-			if jail ~= "FederalJail" then
-				TriggerClientEvent("esx_jb_jailer:JailInStation", playerid,jail,2,jailtime)
-			else
-				TriggerClientEvent("esx_jb_jailer:JailInStation", playerid,jail,80,jailtime)
-			end
+			TriggerClientEvent("esx_jb_jailer:JailInStation", playerid,jail,jailtime)
 	end
 end)
 
