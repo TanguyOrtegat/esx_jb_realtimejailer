@@ -95,8 +95,9 @@ AddEventHandler("esx_jb_jailer:UnJailplayer", function(playerid)
 	local identifier = GetPlayerIdentifiers(playerid)[1]
 	if GetPlayerName(playerid) ~= nil then
 		TriggerClientEvent("esx_jb_jailer:UnJail", playerid)
-		MySQL.Async.execute("INSERT INTO jail (identifier,J_Time, isjailed) VALUES (@Identifier,@J_Time,@isjailed) ON DUPLICATE KEY UPDATE Identifier=identifier,isjailed=@isjailed,J_Time=@J_Time", {['@identifier'] = identifier, ['@J_Time'] = os.date('%Y-%m-%d %H:%M:%S'),['@isjailed'] = false})
+		-- MySQL.Async.execute("INSERT INTO jail (identifier,J_Time, isjailed) VALUES (@Identifier,@J_Time,@isjailed) ON DUPLICATE KEY UPDATE Identifier=identifier,isjailed=@isjailed,J_Time=@J_Time", {['@identifier'] = identifier, ['@J_Time'] = os.date('%Y-%m-%d %H:%M:%S'),['@isjailed'] = false})
 		-- MySQL.Async.execute("UPDATE jail SET `isjailed` = false where identifier = @identifier", {['@identifier'] = identifier)
+		MySQL.Async.execute("DELETE FROM jail WHERE identifier=identifier, {['@identifier'] = identifier})
 	end
 end)
 
