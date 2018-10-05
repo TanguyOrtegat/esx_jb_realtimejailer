@@ -105,17 +105,16 @@ function SetJailClothes()
 local playerPed = GetPlayerPed(-1)
   TriggerEvent('skinchanger:getSkin', function(skin)
      if skin.sex == 0 then
-		-- print(dump(Config.Clothes[job]))
       if Config.Clothes.police.prison_wear.male ~= nil then
         TriggerEvent('skinchanger:loadClothes', skin, Config.Clothes.police.prison_wear.male)
       else
-        ESX.ShowNotification(_U('no_outfit'))
+        ESX.ShowNotification('no_outfit')
       end
     else
       if Config.Clothes.police.prison_wear.female ~= nil then
         TriggerEvent('skinchanger:loadClothes', skin, Config.Clothes.police.prison_wear.female)
       else
-        ESX.ShowNotification(_U('no_outfit'))
+        ESX.ShowNotification('no_outfit')
       end
     end
   end)
