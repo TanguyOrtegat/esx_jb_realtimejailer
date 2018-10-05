@@ -25,7 +25,7 @@ function jailing(Station, JailTime)
 		
 		Citizen.CreateThread(function()
 			local spawnloccoords = {}
-			TriggerEvent('esx_society:setClothes', "police", "prison_wear")	
+			SetJailClothes()
 			spawnloccoords = SetPlayerSpawnLocationjail(Station)
 			SetEntityCoords(PlayerPed, spawnloccoords.x,spawnloccoords.y, spawnloccoords.z )
 			cJ = true
@@ -61,7 +61,7 @@ function jailing(Station, JailTime)
 				JailTime = JailTime - 1.0
 			end
 			TriggerServerEvent('chatMessageEntered', "SYSTEM", { 0, 0, 0 }, GetPlayerName(PlayerId()) .." a été libéré de la prison.")
-			TriggerServerEvent('esx_jb_jailer:UnJailplayer', GetPlayerServerId(PlayerId()))
+			GetBackOriginalClothes()
 			local outsidecoords = {}
 			outsidecoords = SetPlayerSpawnLocationoutsidejail(Station)
 			SetEntityCoords(PlayerPed, outsidecoords.x,outsidecoords.y,outsidecoords.z )
@@ -100,3 +100,29 @@ RegisterNetEvent("esx_jb_jailer:UnJail")
 AddEventHandler("esx_jb_jailer:UnJail", function()
 	IsPlayerUnjailed = true
 end)
+
+function SetJailClothes()
+local playerPed = GetPlayerPed(-1)
+  TriggerEvent('skinchanger:getSkin', function(skin)
+     if skin.sex == 0 then
+		-- print(dump(Config.Clothes[job]))
+      if Config.Clothes.police.prison_wear.male ~= nil then
+        TriggerEvent('skinchanger:loadClothes', skin, Config.Clothes.police.prison_wear.male)
+      else
+        ESX.ShowNotification(_U('no_outfit'))
+      end
+    else
+      if Config.Clothes.police.prison_wear.female ~= nil then
+        TriggerEvent('skinchanger:loadClothes', skin, Config.Clothes.police.prison_wear.female)
+      else
+        ESX.ShowNotification(_U('no_outfit'))
+      end
+    end
+  end)
+end
+
+function GetBackOriginalClothes()
+	ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
+	  TriggerEvent('skinchanger:loadSkin', skin)
+	end)
+end
