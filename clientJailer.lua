@@ -99,6 +99,7 @@ end
 RegisterNetEvent("esx_jb_jailer:UnJail")
 AddEventHandler("esx_jb_jailer:UnJail", function()
 	IsPlayerUnjailed = true
+	GetBackOriginalClothes()
 end)
 
 function SetJailClothes()
