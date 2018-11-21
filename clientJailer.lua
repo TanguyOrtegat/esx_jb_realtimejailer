@@ -62,6 +62,7 @@ function jailing(Station, JailTime)
 			end
 			TriggerServerEvent('chatMessageEntered', "SYSTEM", { 0, 0, 0 }, GetPlayerName(PlayerId()) .." a été libéré de la prison.")
 			GetBackOriginalClothes()
+			TriggerServerEvent('esx_jb_jailer:UnJailplayer2')
 			local outsidecoords = {}
 			outsidecoords = SetPlayerSpawnLocationoutsidejail(Station)
 			SetEntityCoords(PlayerPed, outsidecoords.x,outsidecoords.y,outsidecoords.z )
